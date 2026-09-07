@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brother's Private Dashboard 🔐 | Akshoo's Responses</title>
+  
+  <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Admin Stylesheet -->
+  <link rel="stylesheet" href="admin.css" />
+  
+  <!-- Firebase SDK v10 Compat -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  
+  <!-- Firebase Config Script -->
+  <script src="firebase-config.js"></script>
+</head>
+<body class="theme-midnight">
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- =======================================================
+       1. AUTHENTICATION / LOGIN SCREEN
+       ======================================================= -->
+  <div id="loginScreen" class="auth-overlay">
+    <div class="auth-card glass-panel">
+      <div class="auth-icon">🔐</div>
+      <h2 class="serif-heading">Brother's Private Vault</h2>
+      <p class="subtitle-text">Log in to view Akshoo's response history securely.</p>
+
+      <form id="loginForm" class="auth-form">
+        <div class="input-group">
+          <label><i class="fa-solid fa-envelope"></i> Admin Email</label>
+          <input type="email" id="adminEmail" placeholder="admin@brother.com" required autocomplete="off" />
+        </div>
+
+        <div class="input-group">
+          <label><i class="fa-solid fa-key"></i> Password</label>
+          <input type="password" id="adminPassword" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" id="btnLogin" class="btn btn-primary btn-glow">
+          Log In <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        </button>
+      </form>
+
+      <p class="demo-credentials-note">
+        💡 <strong>Offline Demo Credentials:</strong> Email: <code>admin@brother.com</code> | Pass: <code>brother123</code>
+      </p>
+    </div>
+  </div>
+
+  <!-- =======================================================
+       2. DASHBOARD CONTAINER
+       ======================================================= -->
+  <div id="dashboardContainer" class="admin-container hidden">
+
+    <!-- HEADER BAR -->
+    <header class="admin-header glass-panel">
+      <div class="header-left">
+        <div class="admin-badge">
+          <i class="fa-solid fa-user-shield"></i> AUTHENTICATED ADMIN
+        </div>
+        <h1 class="admin-title">Akshoo's Journey Responses 💖</h1>
+      </div>
+
+      <div class="header-right">
+        <button id="btnRefresh" class="btn-icon" title="Refresh Responses">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+        <button id="btnLogout" class="btn btn-secondary btn-sm">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- STATS OVERVIEW CARDS -->
+    <div class="stats-grid">
+      <div class="stat-card glass-panel">
+        <div class="stat-icon text-pink"><i class="fa-solid fa-heart"></i></div>
+        <div class="stat-info">
+          <span class="stat-val" id="totalResponsesCount">0</span>
+          <span class="stat-label">Total Submissions</span>
+        </div>
+      </div>
+
+      <div class="stat-card glass-panel">
+        <div class="stat-icon text-amber"><i class="fa-solid fa-clock"></i></div>
+        <div class="stat-info">
+          <span class="stat-val" id="latestResponseTime">Never</span>
+          <span class="stat-label">Latest Submission</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEARCH & CONTROLS BAR -->
+    <div class="controls-bar glass-panel">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Search answers or keywords..." />
+      </div>
+
+      <div class="sort-box">
+        <label><i class="fa-solid fa-sort"></i> Sort:</label>
+        <select id="sortSelect" class="custom-select">
+          <option value="newest">Latest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- RESPONSES CARDS GRID -->
+    <main class="responses-grid" id="responsesGrid">
+      <!-- Dynamically populated by JS -->
+    </main>
+
+  </div>
+
+  <!-- =======================================================
+       3. MODALS (View Details & Delete Confirmation)
+       ======================================================= -->
+  <!-- View Modal -->
+  <div id="viewModal" class="modal-overlay hidden">
+    <div class="modal-card glass-panel">
+      <button class="modal-close-btn" id="closeViewModalBtn">&times;</button>
+      <h3 class="serif-heading" id="modalTitle">Response Details</h3>
+      <span class="timestamp-badge" id="modalTimestamp">Submitted on Date</span>
+
+      <div class="modal-body-content" id="modalBody">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div id="deleteModal" class="modal-overlay hidden">
+    <div class="modal-card glass-panel text-center">
+      <button class="modal-close-btn" id="closeDeleteModalBtn">&times;</button>
+      <div class="modal-icon text-pink"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3>Delete Response?</h3>
+      <p class="subtitle-text">Are you sure you want to permanently delete this response entry?</p>
+
+      <div class="modal-actions">
+        <button id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+        <button id="confirmDeleteBtn" class="btn btn-primary" style="background: #ef4444;">Delete Entry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin JavaScript -->
+  <script src="admin.js"></script>
+</body>
+</html>
