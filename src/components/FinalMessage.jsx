@@ -20,8 +20,15 @@ export default function FinalMessage({ onReplay }) {
       answersObj = JSON.parse(localStorage.getItem('pari_answers_backup') || '{}');
     } catch (e) {}
 
-    // 2. Fetch Anna Name & Pari Note
+    // 2. Fetch Anna Name & Photo Thought
     const annaName = localStorage.getItem('pari_fav_anna_name') || 'Anna';
+    
+    let photoThoughtRaw = '';
+    try {
+      photoThoughtRaw = localStorage.getItem('pari_photo_thought') || localStorage.getItem('pari_note_backup') || '';
+    } catch (e) {}
+
+    const photoThought = photoThoughtRaw.trim() ? photoThoughtRaw.trim() : "(Pari didn't type anything)";
 
     // 3. Build Q1-Q15 answers text lines
     let qLines = [];
@@ -31,17 +38,18 @@ export default function FinalMessage({ onReplay }) {
       qLines.push(`Q${q.id}: ${ans}`);
     });
 
-    const finalDescription = "Pari, naan unna evlo tease pannalum… nee eppovume enakku romba special dhaan. Always be happy. Always keep smiling. And never forget your Anna loves you so much. — Riyas 🫂";
+    const finalDescription = `Pari, naan unna evlo tease pannalum… nee eppovume enakku romba special dhaan.\nAlways be happy.\nAlways keep smiling.\nAnd never forget your Anna loves you so much.\n— Riyas 🫂`;
 
     // 4. Construct complete message format
     let msg = `💌 Pari's Surprise Results ❤️\n\n`;
     msg += qLines.join('\n') + `\n\n`;
     msg += `💕 Promise:\nI Promise Anna ❤️\n\n`;
     msg += `💌 My favourite Anna name:\n${annaName}\n\n`;
-    msg += `🥹 Final Message:\n${finalDescription}\n\n`;
+    msg += `📸 First thought after seeing the photo:\n${photoThought}\n\n`;
+    msg += `🥹 Final Message:\n\n${finalDescription}\n\n`;
     msg += `— From Pari ❤️`;
 
-    // 5. Open WhatsApp link safely
+    // 5. Open WhatsApp link safely with +919585654094
     const whatsappUrl = `https://wa.me/919585654094?text=${encodeURIComponent(msg)}`;
     window.open(whatsappUrl, '_blank');
   };

@@ -10,10 +10,16 @@ export default function PhotoReveal({ onSubmitNote }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!noteText.trim()) return;
     audioEffects.playPop();
     audioEffects.playChime();
-    onSubmitNote(noteText.trim());
+    
+    const trimmed = noteText.trim();
+    try {
+      localStorage.setItem('pari_photo_thought', trimmed);
+      localStorage.setItem('pari_note_backup', trimmed);
+    } catch (err) {}
+
+    onSubmitNote(trimmed);
   };
 
   return (
@@ -89,12 +95,7 @@ export default function PhotoReveal({ onSubmitNote }) {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             type="submit"
-            disabled={!noteText.trim()}
-            className={`w-full py-3.5 px-6 rounded-full font-bold text-base shadow-lg flex items-center justify-center gap-2 transition-all duration-300 ${
-              noteText.trim()
-                ? 'bg-gradient-to-r from-rose-500 to-purple-600 text-white shadow-rose-500/30 cursor-pointer'
-                : 'bg-white/10 text-white/30 cursor-not-allowed border border-white/10'
-            }`}
+            className="w-full py-3.5 px-6 rounded-full font-bold text-base shadow-lg flex items-center justify-center gap-2 transition-all duration-300 bg-gradient-to-r from-rose-500 to-purple-600 text-white shadow-rose-500/30 cursor-pointer"
           >
             <span>Send it to Anna</span>
             <Heart size={18} className="fill-white/30" />
