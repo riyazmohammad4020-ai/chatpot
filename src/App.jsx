@@ -13,11 +13,40 @@ import LittleNote from './components/LittleNote';
 import FinalMessage from './components/FinalMessage';
 import FloatingHearts from './components/FloatingHearts';
 import MusicControl from './components/MusicControl';
+import AdminDashboard from './components/AdminDashboard';
 
 import { questions } from './data/questions';
 import { audioEffects } from './utils/audioEffects';
+import { saveAnswer } from './lib/supabase';
 
 export default function App() {
+  // Robust Admin Route detector (/admin, /admin/, ?admin=true, or #admin)
+  const [isAdmin, setIsAdmin] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
+      const search = window.location.search.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      return path === '/admin' || search.includes('admin') || hash === '#admin';
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const checkAdmin = () => {
+      const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
+      const search = window.location.search.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      setIsAdmin(path === '/admin' || search.includes('admin') || hash === '#admin');
+    };
+
+    window.addEventListener('popstate', checkAdmin);
+    window.addEventListener('hashchange', checkAdmin);
+    return () => {
+      window.removeEventListener('popstate', checkAdmin);
+      window.removeEventListener('hashchange', checkAdmin);
+    };
+  }, []);
+
   // Navigation Screens: 'opening' | 'intro' | 'questions' | 'promise' | 'question16' | 'gift' | 'photo' | 'note' | 'final'
   const [currentScreen, setCurrentScreen] = useState('opening');
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -74,6 +103,11 @@ export default function App() {
     };
   }, [isMusicPlaying]);
 
+  // If URL is /admin, render Admin Dashboard separately
+  if (isAdmin) {
+    return <AdminDashboard />;
+  }
+
   // Handlers
   const handleOpenJourney = () => {
     setIsMusicPlaying(true);
@@ -86,7 +120,10 @@ export default function App() {
   };
 
   const handleAnswerSelected = (id, answerText) => {
-    // Optionally store answers
+    const qObj = questions.find(q => q.id === id);
+    const qText = qObj ? qObj.question : `Question ${id}`;
+    // Save response to Supabase & LocalStorage
+    saveAnswer(id, qText, answerText);
   };
 
   const handleNextQuestion = () => {

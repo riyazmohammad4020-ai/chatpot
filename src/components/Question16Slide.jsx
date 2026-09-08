@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles, Send, ArrowRight } from 'lucide-react';
 import { audioEffects } from '../utils/audioEffects';
+import { saveAnnaName } from '../lib/supabase';
 
 export default function Question16Slide({ onComplete }) {
   const [annaName, setAnnaName] = useState('');
@@ -22,9 +23,8 @@ export default function Question16Slide({ onComplete }) {
       } catch (err) {}
     }
 
-    try {
-      localStorage.setItem('pari_fav_anna_name', annaName.trim());
-    } catch (err) {}
+    // Save to Supabase & LocalStorage
+    saveAnnaName(annaName.trim());
 
     setIsSubmitted(true);
   };
