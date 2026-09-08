@@ -1,0 +1,85 @@
+/* src/styles/animations.css */
+
+@keyframes heartbeatPulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255, 117, 140, 0.4)); }
+  15% { transform: scale(1.35); filter: drop-shadow(0 0 35px rgba(255, 46, 99, 0.9)); }
+  30% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(255, 117, 140, 0.5)); }
+  45% { transform: scale(1.2); filter: drop-shadow(0 0 25px rgba(255, 46, 99, 0.8)); }
+  60%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255, 117, 140, 0.4)); }
+}
+
+.animate-heartbeat {
+  animation: heartbeatPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(0.8) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-110vh) scale(1.2) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-float-up {
+  animation: floatUp 8s linear infinite;
+}
+
+@keyframes giftBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-12px) rotate(-3deg); }
+  50% { transform: translateY(0) rotate(3deg); }
+  75% { transform: translateY(-6px) rotate(-1deg); }
+}
+
+.animate-gift-bounce {
+  animation: giftBounce 2.5s ease-in-out infinite;
+}
+
+@keyframes giftShake {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  20% { transform: scale(1.05) rotate(-6deg); }
+  40% { transform: scale(1.05) rotate(6deg); }
+  60% { transform: scale(1.08) rotate(-4deg); }
+  80% { transform: scale(1.08) rotate(4deg); }
+}
+
+.animate-gift-shake {
+  animation: giftShake 0.6s ease-in-out;
+}
+
+@keyframes shimmerGlow {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-btn {
+  background: linear-gradient(90deg, #ff2e63, #ff758c, #9c27b0, #ff2e63);
+  background-size: 200% 100%;
+  animation: shimmerGlow 4s linear infinite;
+}
+
+/* Glassmorphic Panel Utility */
+.glass-card-pastel {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 50px rgba(255, 46, 99, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.glass-card-dark {
+  background: rgba(24, 12, 34, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 117, 140, 0.22);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
